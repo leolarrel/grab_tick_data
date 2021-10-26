@@ -21,14 +21,20 @@ def grab_trade_data(year, month, day) :
     url=trade_url_part + "Daily_{0}_{1}_{2}.zip".format(year, month, day)
     print("will grab Daily_{0}_{1}_{2}.zip\n".format(year, month, day) + "URL:" + url)
 
-    a,b = urllib.request.urlretrieve(url, 'grab.zip', grab_hook_progress)
-#   print("grab data type is: " + b.get_content_type())
+    try :
+        a,b = urllib.request.urlretrieve(url, 'grab.zip', grab_hook_progress)
+        #print("grab data type is: " + b.get_content_type())
+        if 'application/zip' == b.get_content_type() :
+            print("grab ok")
+            return True
+        else :
+            raise Exception;
 
-    if 'application/zip' == b.get_content_type() :
-        print("grab ok")
-        return True
-    else :
-        print("grab fail")
+    except urllib.error.URLError as e :
+        print(f"URL error {e}")
+        return False
+    except Exception :
+        print(f"failed")
         return False
 
 if __name__ == '__main__' :
