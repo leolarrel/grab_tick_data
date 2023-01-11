@@ -37,27 +37,28 @@ def grab_trade_data(year, month, day) :
         print(f"failed")
         return False
 
+def grab_oper(the_d) :
+    csv_file_name = "Daily_{0}_{1}_{2}.csv".format(the_d.strftime("%Y"), the_d.strftime("%m"), the_d.strftime("%d"))
+    if os.path.exists(csv_file_name) :
+        print("[" + csv_file_name + "] already exists,skip grab")
+        return 'Ignore'
+    else:
+        print("[" + csv_file_name + "] nod found, " + the_d.strftime("%A"))
+        if grab_trade_data(the_d.strftime("%Y"), the_d.strftime("%m"), the_d.strftime("%d")) == True :
+            unzip_grab()
+            return 'Success'
+        else :
+            return 'Fail'
+
 if __name__ == '__main__' :
     try :
-        prev_day_diff=int(sys.argv[1]) - 1
-        x=datetime.date.today()
+        day_diff = int(sys.argv[1])
+
     except (IndexError, ValueError) :
-        print ("usage: grab.py <how much day>")
+        print("usage: grab.py <how much day>")
         exit()
 
-    while prev_day_diff > -1:
-        y=datetime.timedelta(days=prev_day_diff)
-        prev=x-y
-
-        csv_file_name="Daily_{0}_{1}_{2}.csv".format(prev.strftime("%Y"), prev.strftime("%m"), prev.strftime("%d"))
-        if os.path.exists(csv_file_name) :
-            print("[" + csv_file_name + "] already exists,skip grab")
-        else:
-            print("[" + csv_file_name + "] nod found, weekday is " + prev.strftime("%A"))
-            if grab_trade_data(prev.strftime("%Y"), prev.strftime("%m"), prev.strftime("%d")) == True :
-                unzip_grab()
-
-        prev_day_diff -= 1
-        del y
-        del prev
-
+    x = datetime.datetime.now()
+    gen = ((x - datetime.timedelta(days=(day_diff - i))) for i in range(day_diff + 1))
+    for i in gen :
+        grab_oper(i)
