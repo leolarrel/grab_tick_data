@@ -18,8 +18,8 @@ def grab_hook_progress(block_num, block_size, total_size):
 #   sys.stdout.flush()
 
 def grab_trade_data(year, month, day) :
-    url=trade_url_part + "Daily_{0}_{1}_{2}.zip".format(year, month, day)
-    print("will grab Daily_{0}_{1}_{2}.zip\n".format(year, month, day) + "URL:" + url)
+    url = f"{trade_url_part}Daily_{year}_{month}_{day}.zip"
+    print(f"grab URL: {url}")
 
     try :
         a,b = urllib.request.urlretrieve(url, 'grab.zip', grab_hook_progress)
@@ -34,21 +34,21 @@ def grab_trade_data(year, month, day) :
         print(f"URL error {e}")
         return False
     except Exception :
-        print(f"failed")
+        print("failed")
         return False
 
 def grab_oper(the_d) :
     csv_file_name = "Daily_{0}_{1}_{2}.csv".format(the_d.strftime("%Y"), the_d.strftime("%m"), the_d.strftime("%d"))
     if os.path.exists(csv_file_name) :
-        print("[" + csv_file_name + "] already exists,skip grab")
+        print(f"{csv_file_name} already exists,skip grab")
         return 'Ignore'
-    else:
-        print("[" + csv_file_name + "] nod found, " + the_d.strftime("%A"))
-        if grab_trade_data(the_d.strftime("%Y"), the_d.strftime("%m"), the_d.strftime("%d")) == True :
-            unzip_grab()
-            return 'Success'
-        else :
-            return 'Fail'
+
+    print(f"{csv_file_name} nod found, {the_d.strftime('%A')}")
+    if grab_trade_data(the_d.strftime("%Y"), the_d.strftime("%m"), the_d.strftime("%d")) == True :
+        unzip_grab()
+        return 'Success'
+    else :
+        return 'Fail'
 
 if __name__ == '__main__' :
     try :
